@@ -42,7 +42,6 @@ if (process.argv.length > 2) {
         const webpackDevServer = require('webpack-dev-server');
         webpackConfig.entry.app.push('webpack-dev-server/client?http://localhost:8080/', 'webpack/hot/dev-server');
         webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-        console.log(webpackConfig);
         const server = new webpackDevServer(webpackCompiler, {
             hot: true,
             compress: true,
