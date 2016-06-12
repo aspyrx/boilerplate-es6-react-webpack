@@ -45,6 +45,7 @@ if (process.argv.length > 2) {
         const server = new webpackDevServer(webpackCompiler, {
             hot: true,
             compress: true,
+            historyApiFallback: true,
             stats: { colors: true, timings: true, cached: false }
         });
         server.listen(8080, "localhost");
