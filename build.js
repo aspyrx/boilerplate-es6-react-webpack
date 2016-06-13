@@ -9,7 +9,8 @@ const webpack = require('webpack');
 const ProgressPlugin = require('webpack/lib/ProgressPlugin');
 const ProgressBar = require('progress');
 
-const webpackConfig = require('./webpack.config.js');
+const production = process.argv[2] === 'production';
+const webpackConfig = require(production ? './webpack.config.production.js' : './webpack.config.js');
 
 const webpackBuildFinished = (err, stats) => {
     if (err) {
@@ -34,23 +35,21 @@ webpackCompiler.apply(new ProgressPlugin((percent, msg) => {
     webpackPrevPercent = percent;
 }));
 
-if (process.argv.length > 2) {
-    if (process.argv[2] === 'watch') {
-        webpackCompiler.watch({}, webpackBuildFinished);
-        return;
-    } else if (process.argv[2] === 'live') {
-        const webpackDevServer = require('webpack-dev-server');
-        webpackConfig.entry.app.push('webpack-dev-server/client?http://localhost:8080/', 'webpack/hot/dev-server');
-        webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-        const server = new webpackDevServer(webpackCompiler, {
-            hot: true,
-            compress: true,
-            historyApiFallback: true,
-            stats: { colors: true, timings: true, cached: false }
-        });
-        server.listen(8080, "localhost");
-        return;
-    }
+if (process.argv[2] === 'watch') {
+    webpackCompiler.watch({}, webpackBuildFinished);
+    return;
+} else if (process.argv[2] === 'live') {
+    const webpackDevServer = require('webpack-dev-server');
+    webpackConfig.entry.app.push('webpack-dev-server/client?http://localhost:8080/', 'webpack/hot/dev-server');
+    webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+    const server = new webpackDevServer(webpackCompiler, {
+        hot: true,
+        compress: true,
+        historyApiFallback: true,
+        stats: { colors: true, timings: true, cached: false }
+    });
+    server.listen(8080, "localhost");
+    return;
 }
 
 webpackCompiler.run(webpackBuildFinished);
