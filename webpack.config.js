@@ -2,6 +2,7 @@
 
 const path = require('path');
 const autoprefixer = require('autoprefixer');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -13,7 +14,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: '[name].min.js'
+        filename: '[hash].min.js'
     },
     resolve: {
         root: path.resolve(__dirname, 'src'),
@@ -45,10 +46,15 @@ module.exports = {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 loader: 'babel'
+            },
+            {
+                test: /\.(eot|woff|ttf|svg|jpg|ico)$/,
+                loader: 'url-loader?limit=10000'
             }
         ]
     },
     plugins: [
+        new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
             template: 'src/index.html'
         })

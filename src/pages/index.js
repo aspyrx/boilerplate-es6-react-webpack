@@ -1,14 +1,14 @@
-/*
- * index.js - Index page for the app.
- */
+import Home from './home';
 
-import React, {Component} from 'react';
+const pages = [
+    [Home, '/home', 'Home']
+]
 
-export default class Index extends Component {
-    render() {
-        return (
-            <h1>Hello React!</h1>
-        );
+Object.defineProperties(pages, {
+    indexPath: {
+        value: '/home'
     }
-}
+});
+
+export default pages;
 

@@ -1,0 +1,32 @@
+@import '../base';
+
+:local(.header) {
+    position: relative;
+    display: flex;
+    flex-flow: row wrap;
+
+    :local(.navigation) {
+        flex: 1;
+        display: flex;
+        flex-flow: row wrap;
+        min-width: 75%;
+        align-items: baseline;
+
+        a {
+            margin: 0 @spacing-x;
+            color: @color-text;
+            transition: color @duration-transition;
+
+            &:hover, &:active, &:local(.active) {
+                color: @color-text-active;
+            }
+        }
+    }
+
+    :local(.logo) {
+        display: flex;
+        align-items: center;
+        margin: 0 @spacing-x;
+    }
+}
+

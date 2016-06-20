@@ -3,6 +3,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
@@ -15,7 +16,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         publicPath: '/',
-        filename: '[name].min.js'
+        filename: '[hash].min.js'
     },
     resolve: {
         root: path.resolve(__dirname, 'src'),
@@ -50,10 +51,15 @@ module.exports = {
                 test: /\.js$/,
                 include: [ path.resolve(__dirname, 'src') ],
                 loader: 'babel'
+            },
+            {
+                test: /\.(eot|woff|ttf|svg|jpg|ico)$/,
+                loader: 'url-loader?limit=10000'
             }
         ]
     },
     plugins: [
+        new CleanWebpackPlugin(['dist']),
         new webpack.optimize.UglifyJsPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.DedupePlugin(),
@@ -65,6 +71,6 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: 'src/index.html'
         }),
-        new ExtractTextPlugin('style.css', {allChunks: true})
+        new ExtractTextPlugin('[hash].min.css', {allChunks: true})
     ]
 };
