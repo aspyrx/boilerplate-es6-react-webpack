@@ -8,7 +8,7 @@ import styles from './home.less';
 
 export default function Home(props) {
     return <div className={styles.home} {...props}>
-        <h1>Hello React!</h1>
+        <span>Hello React!</span>
     </div>;
 }
 

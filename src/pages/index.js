@@ -1,7 +1,9 @@
 import Home from './home';
+import Example from './example';
 
 const pages = [
-    [Home, '/home', 'Home']
+    [Home, '/home', 'Home'],
+    [Example, '/example', 'Example']
 ]
 
 Object.defineProperties(pages, {

@@ -5,7 +5,7 @@ import styles from './header.less';
 
 function Logo() {
     return <div className={styles.logo}>
-        <h1>LOGO</h1>
+        LOGO
     </div>;
 }
 
