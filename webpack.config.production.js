@@ -8,8 +8,21 @@ const config = require('./webpack.config.base.js');
 
 config.debug = false;
 
+
 if (!config.plugins) {
     config.plugins = [];
+}
+
+// Use ExtractTextPlugin on any loader that uses style-loader
+if (config.module.loaders) {
+    for (const l of config.module.loaders) {
+        if (l.loader === 'style') {
+            l.loader = ExtractTextPlugin.extract('style');
+        } else if (l.loaders && l.loaders[0] === 'style')  {
+            l.loader = ExtractTextPlugin.extract('style', l.loaders.slice(1));
+            delete l.loaders;
+        }
+    }
 }
 
 config.plugins.push(
