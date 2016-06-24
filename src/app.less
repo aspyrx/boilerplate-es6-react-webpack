@@ -1,5 +1,4 @@
-@import '~normalize-css/normalize.css';
-@import 'base';
+@import '~base';
 
 a {
     color: @color-primary;
@@ -10,7 +9,7 @@ a {
     }
 }
 
-#app {
+:global(#app) {
     font-family: sans-serif;
     font-size: @font-size;
     line-height: @line-height;
@@ -24,14 +23,14 @@ a {
         outline: none;
     }
 
-    :local(.containers) {
+    .containers {
         flex: 1;
         max-width: @width-container-max;
         display: flex;
         flex-flow: column;
         position: relative;
 
-        :local(.container) {
+        .container {
             position: relative;
 
             &:first-of-type {
@@ -51,54 +50,54 @@ a {
                 margin: @spacing-y 0;
             }
 
-            :local(.replaceAnimated) {
-                :local(.appear) {
+            .replaceAnimated {
+                .appear {
                     opacity: 0.001;
                     transform: translateY(-@spacing-y);
                 }
 
-                :local(.appearActive) {
+                .appearActive {
                     opacity: 1;
                     transform: none;
                     transition: all @duration-enter-leave;
                 }
 
-                :local(.enter) {
+                .enter {
                     opacity: 0.001;
                     transform: translateX(-100%);
                 }
 
-                :local(.enterActive) {
+                .enterActive {
                     opacity: 1;
                     transform: none;
                     transition: all @duration-enter-leave;
                 }
 
-                :local(.leave) {
+                .leave {
                     opacity: 1;
                     transform: none;
                 }
 
-                :local(.leaveActive) {
+                .leaveActive {
                     opacity: 0.001;
                     transform: translateX(100%);
                     transition: all @duration-enter-leave;
                 }
 
 
-                &:local(.increase) {
-                    :local(.enter) {
+                &.increase {
+                    .enter {
                         opacity: 0.001;
                         transform: translateX(100%);
                     }
 
-                    :local(.enterActive) {
+                    .enterActive {
                         opacity: 1;
                         transform: none;
                         transition: all @duration-enter-leave;
                     }
 
-                    :local(.leaveActive) {
+                    .leaveActive {
                         transform: translateX(-100%);
                     }
                 }

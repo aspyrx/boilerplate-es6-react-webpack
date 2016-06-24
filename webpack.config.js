@@ -2,6 +2,10 @@
 
 const config = require('./webpack.config.base.js');
 
+if (!config.module) {
+    config.module = {};
+}
+
 if (!config.module.preLoaders) {
     config.module.preLoaders = [];
 }

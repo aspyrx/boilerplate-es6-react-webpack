@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import ReactCSSTransitionReplace from 'react-css-transition-replace';
 import classNames from 'classnames';
-import pages from './pages';
-import Header from './components/header';
+import pages from '~/pages';
+import Header from '~/components/header';
 
+import 'normalize-css/normalize.css';
 import styles from 'app.less'
 
 export default class App extends Component {

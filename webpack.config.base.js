@@ -4,19 +4,28 @@ const path = require('path');
 const autoprefixer = require('autoprefixer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const ctxDir = path.resolve(__dirname);
+const srcDir = path.resolve(__dirname, 'src');
+const vendorDir = path.resolve(__dirname, 'vendor');
+const outDir = path.resolve(__dirname, 'dist');
+
 module.exports = {
     devtool: 'cheap-module-source-map',
     debug: true,
-    context: path.resolve(__dirname),
+    context: ctxDir,
     entry: {
-        app: [ './src/index.js' ]
+        app: [srcDir]
     },
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: outDir,
         filename: '[hash].min.js'
     },
     resolve: {
-        root: path.resolve(__dirname, 'src'),
+        alias: {
+            '~': srcDir,
+            '^': vendorDir
+        },
+        root: srcDir,
         extensions: ['', '.js'],
         modulesDirectories: ['node_modules']
     },
@@ -25,11 +34,38 @@ module.exports = {
         loaders: [
             {
                 test: /\.css$/,
-                loaders: ['style', 'css?localIdentName=[local]-[hash:base64:5]', 'postcss']
+                include: [vendorDir, /node_modules/],
+                loaders: ['style', 'css?importLoaders=1', 'postcss']
             },
             {
                 test: /\.less$/,
-                loaders: ['style', 'css?localIdentName=[local]-[hash:base64:5]', 'postcss', 'less']
+                include: [vendorDir, /node_modules/],
+                loaders: ['style', 'css?importLoaders=2', 'postcss', 'less']
+            },
+            {
+                test: /\.css$/,
+                include: [srcDir],
+                loaders: [
+                    'style',
+                    'css'
+                        + '?modules'
+                        + '&localIdentName=[local]-[hash:base64:5]'
+                        + '&importLoaders=1',
+                    'postcss'
+                ]
+            },
+            {
+                test: /\.less$/,
+                include: [srcDir],
+                loaders: [
+                    'style',
+                    'css'
+                        + '?modules'
+                        + '&localIdentName=[local]-[hash:base64:5]'
+                        + '&importLoaders=2',
+                    'postcss',
+                    'less'
+                ]
             },
             {
                 test: /\.js$/,

@@ -1,11 +1,11 @@
-@import '../base';
+@import '~base';
 
-:local(.header) {
+.header {
     position: relative;
     display: flex;
     flex-flow: row wrap;
 
-    :local(.navigation) {
+    .navigation {
         flex: 1;
         display: flex;
         flex-flow: row wrap;
@@ -17,13 +17,13 @@
             color: @color-text;
             transition: color @duration-transition;
 
-            &:hover, &:active, &:local(.active) {
+            &:hover, &:active, &.active {
                 color: @color-text-active;
             }
         }
     }
 
-    :local(.logo) {
+    .logo {
         display: flex;
         align-items: center;
         margin: 0 @spacing-x;
