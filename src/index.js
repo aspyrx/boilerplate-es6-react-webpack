@@ -6,8 +6,8 @@ import React from 'react';
 import {render} from 'react-dom';
 import {Router, Route, IndexRedirect, browserHistory} from 'react-router';
 
-import App from './app';
-import pages from './pages';
+import App from '~/app';
+import pages from '~/pages';
 
 render(<Router history={browserHistory}>
     <Route path="/" component={App}>
