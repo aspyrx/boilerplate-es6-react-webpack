@@ -1,16 +1,12 @@
-import Home from './home';
-import Example from './example';
+const pagesCtx = require.context('.', false, /^(.(?!index))*\.js$/);
 
-const pages = [
-    [Home, '/home', 'Home'],
-    [Example, '/example', 'Example']
-]
+const pages = [];
 
-Object.defineProperties(pages, {
-    indexPath: {
-        value: '/home'
-    }
-});
+for (const key of pagesCtx.keys()) {
+    pages.push(pagesCtx(key));
+}
 
-export default pages;
+pages.indexPath = '/home';
+
+export { pages as default };
 
