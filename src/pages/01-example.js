@@ -6,3 +6,9 @@ export default function Example(props) {
     </div>
 }
 
+export const page = {
+    path: '/example',
+    title: 'example'
+}
+
+
