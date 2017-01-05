@@ -1,80 +1,88 @@
-/* eslint-env node */
+'use strict';
 
 const path = require('path');
-const autoprefixer = require('autoprefixer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const ctxDir = path.resolve(__dirname);
-const srcDir = path.resolve(__dirname, 'src');
-const vendorDir = path.resolve(__dirname, 'vendor');
-const outDir = path.resolve(__dirname, 'dist');
+const srcDir = path.resolve(ctxDir, 'src');
+const vendorDir = path.resolve(ctxDir, 'vendor');
+const outDir = path.resolve(ctxDir, 'dist');
 
 module.exports = {
     devtool: 'cheap-module-source-map',
-    debug: true,
     context: ctxDir,
     entry: {
         app: [srcDir]
     },
     output: {
         path: outDir,
-        filename: '[hash].min.js'
+        filename: '[name].[hash].min.js'
     },
     resolve: {
         alias: {
             '~': srcDir,
             '^': vendorDir
         },
-        root: srcDir,
-        extensions: ['', '.js'],
-        modulesDirectories: ['node_modules']
+        extensions: ['.js'],
+        modules: [
+            srcDir,
+            'node_modules'
+        ]
     },
-    postcss: () => [autoprefixer],
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.css$/,
                 include: [vendorDir, /node_modules/],
-                loaders: ['style', 'css?importLoaders=1', 'postcss']
+                loaders: [
+                    'style-loader',
+                    'css-loader?importLoaders=1',
+                    'postcss-loader'
+                ]
             },
             {
                 test: /\.less$/,
                 include: [vendorDir, /node_modules/],
-                loaders: ['style', 'css?importLoaders=2', 'postcss', 'less']
+                loaders: [
+                    'style-loader',
+                    'css-loader?importLoaders=2',
+                    'postcss-loader',
+                    'less-loader'
+                ]
             },
             {
                 test: /\.css$/,
                 include: [srcDir],
                 loaders: [
-                    'style',
-                    'css'
+                    'style-loader',
+                    'css-loader'
                         + '?modules'
                         + '&localIdentName=[local]-[hash:base64:5]'
                         + '&importLoaders=1',
-                    'postcss'
+                    'postcss-loader'
                 ]
             },
             {
                 test: /\.less$/,
                 include: [srcDir],
                 loaders: [
-                    'style',
-                    'css'
+                    'style-loader',
+                    'css-loader'
                         + '?modules'
                         + '&localIdentName=[local]-[hash:base64:5]'
                         + '&importLoaders=2',
-                    'postcss',
-                    'less'
+                    'postcss-loader',
+                    'less-loader'
                 ]
             },
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: 'babel'
+                use: ['babel-loader']
             },
             {
                 test: /\.(eot|woff|ttf|svg|jpg|ico)$/,
-                loader: 'url-loader?limit=10000'
+                use: ['url-loader?limit=10000']
             }
         ]
     },

@@ -1,7 +1,3 @@
-/* eslint-env node */
-/* eslint no-console: "off" */
-/* eslint strict: "off" */
-
 'use strict';
 
 const process = require('process');
@@ -10,15 +6,22 @@ const ProgressPlugin = require('webpack/lib/ProgressPlugin');
 const ProgressBar = require('progress');
 
 const production = process.argv[2] === 'production';
-const webpackConfig = require(production ? './webpack.config.production.js' : './webpack.config.js');
+const webpackConfig = require(production
+    ? './webpack.config.production.js'
+    : './webpack.config.js'
+);
 
 const webpackBuildFinished = (err, stats) => {
     if (err) {
-        console.log("\n\n===== WEBPACK BUILD FAILED =====");
+        console.log('\n\n===== WEBPACK BUILD FAILED =====');
         throw err;
     } else {
-        console.log("\n\n===== WEBPACK BUILD FINISHED =====");
-        console.log(stats.toString({ colors: true, timings: true, cached: false }));
+        console.log('\n\n===== WEBPACK BUILD FINISHED =====');
+        console.log(stats.toString({
+            colors: true,
+            timings: true,
+            cached: false
+        }));
     }
 };
 
@@ -40,7 +43,10 @@ if (process.argv[2] === 'watch') {
     return;
 } else if (process.argv[2] === 'live') {
     const webpackDevServer = require('webpack-dev-server');
-    webpackConfig.entry.app.push('webpack-dev-server/client?http://localhost:8080/', 'webpack/hot/dev-server');
+    webpackConfig.entry.app.push(
+        'webpack-dev-server/client?http://localhost:8080/',
+        'webpack/hot/dev-server'
+    );
     webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
     const server = new webpackDevServer(webpackCompiler, {
         hot: true,
@@ -48,7 +54,7 @@ if (process.argv[2] === 'watch') {
         historyApiFallback: true,
         stats: { colors: true, timings: true, cached: false }
     });
-    server.listen(8080, "localhost");
+    server.listen(8080, 'localhost');
     return;
 }
 

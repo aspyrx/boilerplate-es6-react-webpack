@@ -5,16 +5,7 @@ import styles from './header.less';
 
 function Logo() {
     return <div className={styles.logo}>
-        <div className={styles.icon}>
-            <div className={styles.right}>
-                <div className={styles.left}>
-                    <div className={styles.middle} />
-                </div>
-            </div>
-        </div>
-        <div className={styles.logoText}>
-            <span>SPYRX</span>.co
-        </div>
+        <span>boilerplate</span>
     </div>;
 }
 
@@ -45,5 +36,5 @@ Header.propTypes = {
             })
         })
     })).isRequired
-}
+};
 

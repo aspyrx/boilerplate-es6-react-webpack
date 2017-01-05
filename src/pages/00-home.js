@@ -15,5 +15,5 @@ export default function Home(props) {
 export const page = {
     path: '/home',
     title: 'home'
-}
+};
 

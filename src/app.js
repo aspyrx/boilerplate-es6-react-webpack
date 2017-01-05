@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import ReactCSSTransitionReplace from 'react-css-transition-replace';
 import classNames from 'classnames';
 import pages from '~/pages';
-import Header from '~/components/header';
+import Header from '~/header';
 
 import 'normalize-css/normalize.css';
-import styles from './app.less'
+import styles from './app.less';
 
 export default class App extends Component {
     static get propTypes() {
@@ -20,10 +20,13 @@ export default class App extends Component {
 
         this.state = {
             linkIncrease: false
-        }
+        };
 
         this.linkOrder = {};
-        pages.map(([Page, pathname], i) => this.linkOrder[pathname] = i);
+        pages.forEach((module, i) => {
+            const { path } = module.page;
+            this.linkOrder[path] = i;
+        });
     }
 
     componentWillReceiveProps(props) {

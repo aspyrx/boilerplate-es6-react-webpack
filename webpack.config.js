@@ -1,4 +1,4 @@
-/* eslint-env node */
+'use strict';
 
 const config = require('./webpack.config.base.js');
 
@@ -6,15 +6,16 @@ if (!config.module) {
     config.module = {};
 }
 
-if (!config.module.preLoaders) {
-    config.module.preLoaders = [];
+if (!config.module.rules) {
+    config.module.rules = [];
 }
 
-config.module.preLoaders.push(
+config.module.rules.push(
     {
         test: /\.js$/,
+        enforce: 'pre',
         exclude: /node_modules/,
-        loader: 'eslint'
+        use: ['eslint-loader']
     }
 );
 
