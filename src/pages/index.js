@@ -1,12 +1,32 @@
-const pagesCtx = require.context('.', false, /^(.(?!index))*\.js$/);
+const componentCtx = require.context(
+    'bundle-loader?lazy!.',
+    true,
+    /^.+\/index.js$/
+);
 
-const pages = [];
+const pageCtx = require.context('.', true, /^.+\/page.json$/);
 
-for (const key of pagesCtx.keys()) {
-    pages.push(pagesCtx(key));
+function Page(key) {
+    Object.assign(this, pageCtx(key), { key });
 }
 
-pages.indexPath = 'home';
+Object.defineProperty(Page.prototype, 'getComponent', {
+    get: function() {
+        const key = this.key.match(/^(.*)\/page.json$/)[1]
+            + '/index.js';
+
+        return function getComponent(partialNextState, done) {
+            try {
+                const loadComponent = componentCtx(key);
+                loadComponent(module => done(null, module.default));
+            } catch (err) {
+                return done(err, null);
+            }
+        };
+    }
+});
+
+const pages = pageCtx.keys().map(key => new Page(key));
 
 export { pages as default };
 

@@ -6,9 +6,3 @@ export default function Example() {
     </div>;
 }
 
-export const page = {
-    path: '/example',
-    title: 'example'
-};
-
-

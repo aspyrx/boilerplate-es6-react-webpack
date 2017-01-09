@@ -24,10 +24,7 @@ class PageContainer extends Component {
         };
 
         this.linkOrder = {};
-        pages.forEach((module, i) => {
-            const { path } = module.page;
-            this.linkOrder[path] = i;
-        });
+        pages.forEach((page, i) => (this.linkOrder[page.path] = i));
     }
 
     componentWillReceiveProps(props) {
@@ -81,10 +78,13 @@ class PageContainer extends Component {
 export default function App() {
     return <Router history={browserHistory}>
         <Route path="/" component={PageContainer}>
-            <IndexRedirect to={pages.indexPath} />
-            {pages.map((module, i) => {
-                const { default: Page, page: { path } } = module;
-                return <Route key={i} path={path} component={Page} />;
+            <IndexRedirect to={pages[0].path} />
+            {pages.map((page, i) => {
+                const { path, getComponent } = page;
+                return <Route key={i}
+                    path={path}
+                    getComponent={getComponent}
+                />;
             })}
         </Route>
     </Router>;

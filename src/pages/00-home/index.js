@@ -8,8 +8,3 @@ export default function Home() {
     </div>;
 }
 
-export const page = {
-    path: '/home',
-    title: 'home'
-};
-

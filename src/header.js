@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'react-router/lib/Link';
+import { Link } from 'react-router';
 
 import styles from './header.less';
 
@@ -14,8 +14,8 @@ export default function Header(props) {
     return <div className={styles.header}>
         <Link to="/home"><Logo /></Link>
         <div className={styles.navigation}>
-            {pages.map((module, i) => {
-                const { page: { path, title } } = module;
+            {pages.map((page, i) => {
+                const { path, title } = page;
                 return <Link key={i}
                     to={path}
                     activeClassName={styles.active}>
