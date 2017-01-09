@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const ctxDir = path.resolve(__dirname);
@@ -12,11 +13,13 @@ module.exports = {
     devtool: 'cheap-module-source-map',
     context: ctxDir,
     entry: {
-        app: [srcDir]
+        main: [srcDir],
+        lib: ['react', 'react-dom', 'react-router']
     },
     output: {
         path: outDir,
-        filename: '[name].[hash].min.js'
+        filename: '[name].[hash].js',
+        chunkFilename: '[name].[chunkhash].js'
     },
     resolve: {
         alias: {
@@ -87,6 +90,9 @@ module.exports = {
         ]
     },
     plugins: [
+        new webpack.optimize.CommonsChunkPlugin({
+            name: ['lib', 'manifest']
+        }),
         new HtmlWebpackPlugin({
             template: 'src/index.html'
         })

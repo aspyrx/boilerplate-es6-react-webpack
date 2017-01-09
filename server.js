@@ -11,6 +11,11 @@ const index = path.join(rootDir, 'index.html');
 http.createServer(function requestListener(req, res) {
     let { pathname } = url.parse(req.url);
     console.log(`${req.method} ${pathname}`);
+    if (req.method !== 'GET') {
+        res.statusCode = 501;
+        return res.end();
+    }
+
     if (pathname === '/') {
         pathname = index;
     }

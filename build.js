@@ -5,11 +5,16 @@ const webpack = require('webpack');
 const ProgressPlugin = require('webpack/lib/ProgressPlugin');
 const ProgressBar = require('progress');
 
-const production = process.argv[2] === 'production';
-const webpackConfig = require(production
-    ? './webpack.config.production.js'
-    : './webpack.config.js'
-);
+const webpackCompiler = webpack(function getWebpackConfig(action) {
+    switch (action) {
+        case 'production':
+            return require('./webpack.config.production.js');
+        case 'live':
+            return require('./webpack.config.live.js');
+        default:
+            return require('./webpack.config.js');
+    }
+}(process.argv[2]));
 
 const webpackBuildFinished = (err, stats) => {
     if (err) {
@@ -25,7 +30,6 @@ const webpackBuildFinished = (err, stats) => {
     }
 };
 
-const webpackCompiler = webpack(webpackConfig);
 const webpackProgress = new ProgressBar(
     '[:bar] :percent eta :etas  :msg', {
         total: 100, complete: '=', incomplete: ' ', width: 10
@@ -38,25 +42,22 @@ webpackCompiler.apply(new ProgressPlugin((percent, msg) => {
     webpackPrevPercent = percent;
 }));
 
-if (process.argv[2] === 'watch') {
-    webpackCompiler.watch({}, webpackBuildFinished);
-    return;
-} else if (process.argv[2] === 'live') {
-    const webpackDevServer = require('webpack-dev-server');
-    webpackConfig.entry.app.push(
-        'webpack-dev-server/client?http://localhost:8080/',
-        'webpack/hot/dev-server'
-    );
-    webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-    const server = new webpackDevServer(webpackCompiler, {
-        hot: true,
-        compress: true,
-        historyApiFallback: true,
-        stats: { colors: true, timings: true, cached: false }
-    });
-    server.listen(8080, 'localhost');
-    return;
+switch (process.argv[2]) {
+    case 'watch':
+        webpackCompiler.watch({}, webpackBuildFinished);
+        return;
+    case 'live': {
+        const webpackDevServer = require('webpack-dev-server');
+        const server = new webpackDevServer(webpackCompiler, {
+            hot: true,
+            compress: true,
+            historyApiFallback: true,
+            stats: { colors: true, timings: true, cached: false }
+        });
+        server.listen(8080, 'localhost');
+        return;
+    }
+    default:
+        webpackCompiler.run(webpackBuildFinished);
 }
-
-webpackCompiler.run(webpackBuildFinished);
 

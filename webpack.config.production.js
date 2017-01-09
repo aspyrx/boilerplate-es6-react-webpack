@@ -39,7 +39,10 @@ config.plugins.push(
             'NODE_ENV': JSON.stringify('production')
         }
     }),
-    new ExtractTextPlugin({ filename: '[name].[contenthash].min.css', allChunks: true })
+    new ExtractTextPlugin({
+        filename: '[name].[contenthash].min.css',
+        allChunks: true
+    })
 );
 
 module.exports = config;

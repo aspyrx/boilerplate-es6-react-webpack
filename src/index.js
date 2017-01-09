@@ -4,18 +4,19 @@
 
 import React from 'react';
 import { render } from 'react-dom';
-import { Router, Route, IndexRedirect, browserHistory } from 'react-router';
-
 import App from '~/app';
-import pages from '~/pages';
 
-render(<Router history={browserHistory}>
-    <Route path="/" component={App}>
-        <IndexRedirect to={pages.indexPath} />
-        {pages.map((module, i) => {
-            const { default: Page, page: { path } } = module;
-            return <Route key={i} path={path} component={Page} />;
-        })}
-    </Route>
-</Router>, document.getElementById('app'));
+const appDiv = document.createElement('div');
+appDiv.id = 'app';
+document.body.appendChild(appDiv);
+render(<App />, appDiv);
 
+if (module.hot) {
+    module.hot.accept('~/app', () =>
+        render(<App />, appDiv)
+    );
+
+    module.hot.dispose(() =>
+        document.body.removeChild(appDiv)
+    );
+}

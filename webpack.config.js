@@ -19,5 +19,11 @@ config.module.rules.push(
     }
 );
 
+if (!config.performance) {
+    config.performance = {};
+}
+
+config.performance.hints = false;
+
 module.exports = config;
 

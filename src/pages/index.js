@@ -6,7 +6,7 @@ for (const key of pagesCtx.keys()) {
     pages.push(pagesCtx(key));
 }
 
-pages.indexPath = '/home';
+pages.indexPath = 'home';
 
 export { pages as default };
 

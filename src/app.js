@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Router, Route, IndexRedirect, browserHistory } from 'react-router';
 import ReactCSSTransitionReplace from 'react-css-transition-replace';
 import classNames from 'classnames';
 import pages from '~/pages';
@@ -7,7 +8,7 @@ import Header from '~/header';
 import 'normalize-css/normalize.css';
 import styles from './app.less';
 
-export default class App extends Component {
+class PageContainer extends Component {
     static get propTypes() {
         return {
             children: React.PropTypes.node,
@@ -75,5 +76,17 @@ export default class App extends Component {
             </div>
         </div>;
     }
+}
+
+export default function App() {
+    return <Router history={browserHistory}>
+        <Route path="/" component={PageContainer}>
+            <IndexRedirect to={pages.indexPath} />
+            {pages.map((module, i) => {
+                const { default: Page, page: { path } } = module;
+                return <Route key={i} path={path} component={Page} />;
+            })}
+        </Route>
+    </Router>;
 }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 
-export default function Example(props) {
-    return <div {...props}>
+export default function Example() {
+    return <div>
         <span>Example page</span>
     </div>;
 }

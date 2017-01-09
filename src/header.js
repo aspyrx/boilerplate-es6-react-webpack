@@ -5,7 +5,7 @@ import styles from './header.less';
 
 function Logo() {
     return <div className={styles.logo}>
-        <span>boilerplate</span>
+        <span>Hello React!</span>
     </div>;
 }
 

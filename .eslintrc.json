@@ -111,7 +111,7 @@
         "no-with": 2,
         "quotes": [2, "single"],
         "radix": 2,
-        "require-jsdoc": [1, {
+        "require-jsdoc": [0, {
             "require": {
                 "FunctionDeclaration": true,
                 "MethodDefinition": true,
