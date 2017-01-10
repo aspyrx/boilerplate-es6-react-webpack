@@ -8,7 +8,7 @@
     "watch": "node build.js watch",
     "build": "node build.js",
     "dist": "node build.js production",
-    "prepublish": "node build.js production",
+    "prepare": "node build.js production",
     "lint": "eslint *.js src"
   },
   "repository": {
