@@ -9,16 +9,12 @@ const componentCtx = require.context(
 const pageCtx = require.context('.', true, /^.+\/page.json$/);
 
 class Page {
-    constructor(key, isIndex) {
-        const _moduleName = key.match(/^(.*)\//)[1];
-        const exactly = isIndex;
-        const pattern = isIndex
+    constructor(page, exactly) {
+        const pattern = exactly
             ? '/'
-            : '/' + _moduleName.match(/^(?:.*-)(.*)/)[1];
+            : page._moduleName.match(/^\.(\/.*)/)[1];
 
-        Object.assign(this, pageCtx(key), {
-            exactly, key, pattern, _moduleName
-        });
+        Object.assign(this, page, { exactly, pattern });
     }
 
     get component() {
@@ -31,7 +27,22 @@ class Page {
     }
 }
 
-const pages = pageCtx.keys().map((key, i) => new Page(key, i === 0));
+const pages = pageCtx.keys()
+    .map(key => {
+        const page = pageCtx(key);
+        return Object.defineProperty(page, '_moduleName', {
+            value: key.match(/^(.*)\//)[1],
+            enumerable: true
+        });
+    })
+    .sort((a, b) => {
+        const { order: aOrd = Infinity } = a;
+        const { order: bOrd = Infinity } = b;
+        return aOrd - bOrd;
+    })
+    .map((page, i) => new Page(page, i === 0));
+
+console.log(pages);
 
 export { pages as default };
 
