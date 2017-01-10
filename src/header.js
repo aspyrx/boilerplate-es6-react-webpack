@@ -12,12 +12,14 @@ function Logo() {
 export default function Header(props) {
     const { pages } = props;
     return <div className={styles.header}>
-        <Link to="/home"><Logo /></Link>
+        <Link to='/'><Logo /></Link>
         <div className={styles.navigation}>
             {pages.map((page, i) => {
-                const { path, title } = page;
-                return <Link key={i}
-                    to={path}
+                const { exactly, pattern, title } = page;
+                return <Link
+                    key={i}
+                    to={pattern}
+                    activeOnlyWhenExact={exactly}
                     activeClassName={styles.active}>
                     {title}
                 </Link>;

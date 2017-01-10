@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Router, Route, IndexRedirect, browserHistory } from 'react-router';
+import { BrowserRouter, Match } from 'react-router';
 import ReactCSSTransitionReplace from 'react-css-transition-replace';
 import classNames from 'classnames';
 import pages from '~/pages';
@@ -11,8 +11,7 @@ import styles from './app.less';
 class PageContainer extends Component {
     static get propTypes() {
         return {
-            children: React.PropTypes.node,
-            location: React.PropTypes.object
+            pathname: React.PropTypes.string.isRequired
         };
     }
 
@@ -28,8 +27,8 @@ class PageContainer extends Component {
     }
 
     componentWillReceiveProps(props) {
-        const { location: { pathname } } = props;
-        const currPathname = this.props.location.pathname;
+        const { pathname } = props;
+        const { pathname: currPathname } = this.props;
         if (pathname !== currPathname) {
             if (this.linkOrder[pathname] > this.linkOrder[currPathname]) {
                 this.setState({ linkIncrease: true });
@@ -40,7 +39,6 @@ class PageContainer extends Component {
     }
 
     render() {
-        const { location: { pathname }, children } = this.props;
         const { linkIncrease } = this.state;
         const replaceClass = classNames(styles.replaceAnimated, {
             [styles.increase]: linkIncrease
@@ -65,28 +63,24 @@ class PageContainer extends Component {
                     transitionEnterTimeout={600}
                     transitionLeaveTimeout={300}
                     overflowHidden={false}>
-                    {children
-                        ? React.cloneElement(children, { key: pathname })
-                        : null
-                    }
                 </ReactCSSTransitionReplace>
+                {pages.map((page, i) => {
+                    const { pattern, exactly, component } = page;
+                    return <Match
+                        key={i}
+                        exactly={exactly}
+                        pattern={pattern}
+                        component={component}
+                    />;
+                })}
             </div>
         </div>;
     }
 }
 
 export default function App() {
-    return <Router history={browserHistory}>
-        <Route path="/" component={PageContainer}>
-            <IndexRedirect to={pages[0].path} />
-            {pages.map((page, i) => {
-                const { path, getComponent } = page;
-                return <Route key={i}
-                    path={path}
-                    getComponent={getComponent}
-                />;
-            })}
-        </Route>
-    </Router>;
+    return <BrowserRouter>
+        <Match pattern="/" component={PageContainer} />
+    </BrowserRouter>;
 }
 
