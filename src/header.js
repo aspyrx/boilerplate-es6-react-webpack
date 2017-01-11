@@ -15,11 +15,11 @@ export default function Header(props) {
         <Link to='/'><Logo /></Link>
         <div className={styles.navigation}>
             {pages.map((page, i) => {
-                const { exactly, pattern, title } = page;
+                const { name, title } = page;
                 return <Link
                     key={i}
-                    to={pattern}
-                    activeOnlyWhenExact={exactly}
+                    to={name}
+                    activeOnlyWhenExact
                     activeClassName={styles.active}>
                     {title}
                 </Link>;

@@ -9,15 +9,15 @@ const componentCtx = require.context(
 const pageCtx = require.context('.', true, /^.+\/page.json$/);
 
 class Page {
-    constructor(page, exactly) {
-        const pattern = exactly
+    constructor(page, index) {
+        const name = index === 0
             ? '/'
             : page.moduleName.match(/^\.(\/.*)/)[1];
 
-        Object.assign(this, page, { exactly, pattern });
+        Object.assign(this, page, { index, name });
     }
 
-    get component() {
+    get Component() {
         const key = this.moduleName + '/index.js';
 
         return asyncComponent((done) => {
@@ -27,6 +27,7 @@ class Page {
     }
 }
 
+const pagesByName = Object.create(null);
 const pages = pageCtx.keys()
     .map(key => {
         const page = pageCtx(key);
@@ -38,7 +39,12 @@ const pages = pageCtx.keys()
         const { order: bOrder = Infinity } = b;
         return aOrder - bOrder;
     })
-    .map((page, i) => new Page(page, i === 0));
+    .map((page, i) => {
+        const p = new Page(page, i);
+        pagesByName[p.name] = p;
+        return p;
+    });
 
-export { pages as default };
+
+export { pages as default, pagesByName };
 

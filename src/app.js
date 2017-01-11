@@ -1,17 +1,19 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { BrowserRouter, Match } from 'react-router';
 import ReactCSSTransitionReplace from 'react-css-transition-replace';
 import classNames from 'classnames';
-import pages from '~/pages';
+import pages, { pagesByName } from '~/pages';
 import Header from '~/header';
 
 import 'normalize-css/normalize.css';
 import styles from './app.less';
 
-class PageContainer extends Component {
+class PageContainer extends React.Component {
     static get propTypes() {
         return {
-            pathname: React.PropTypes.string.isRequired
+            params: React.PropTypes.shape({
+                pagename: React.PropTypes.string
+            }).isRequired
         };
     }
 
@@ -19,18 +21,22 @@ class PageContainer extends Component {
         super();
 
         this.state = {
-            linkIncrease: false
+            linkIncrease: false,
+            page: pages[0]
         };
-
-        this.linkOrder = {};
-        pages.forEach((page, i) => (this.linkOrder[page.path] = i));
     }
 
     componentWillReceiveProps(props) {
-        const { pathname } = props;
-        const { pathname: currPathname } = this.props;
-        if (pathname !== currPathname) {
-            if (this.linkOrder[pathname] > this.linkOrder[currPathname]) {
+        let { params: { pagename = '' } } = props;
+        pagename = `/${pagename}`;
+
+        const page = pagesByName[pagename];
+        const { page: currPage } = this.state;
+
+        if (page !== currPage) {
+            this.setState({ page });
+
+            if (page.index > currPage.index) {
                 this.setState({ linkIncrease: true });
             } else {
                 this.setState({ linkIncrease: false });
@@ -39,10 +45,12 @@ class PageContainer extends Component {
     }
 
     render() {
-        const { linkIncrease } = this.state;
+        const { page, linkIncrease } = this.state;
         const replaceClass = classNames(styles.replaceAnimated, {
             [styles.increase]: linkIncrease
         });
+
+        const { Component } = page;
 
         return <div className={styles.containers}>
             <div className={styles.container}>
@@ -63,16 +71,10 @@ class PageContainer extends Component {
                     transitionEnterTimeout={600}
                     transitionLeaveTimeout={300}
                     overflowHidden={false}>
+                    <div key={page.name}>
+                        <Component />
+                    </div>
                 </ReactCSSTransitionReplace>
-                {pages.map((page, i) => {
-                    const { pattern, exactly, component } = page;
-                    return <Match
-                        key={i}
-                        exactly={exactly}
-                        pattern={pattern}
-                        component={component}
-                    />;
-                })}
             </div>
         </div>;
     }
@@ -80,7 +82,7 @@ class PageContainer extends Component {
 
 export default function App() {
     return <BrowserRouter>
-        <Match pattern="/" component={PageContainer} />
+        <Match pattern="/:pagename?" component={PageContainer} />
     </BrowserRouter>;
 }
 
