@@ -17,20 +17,19 @@ class PageContainer extends React.Component {
         };
     }
 
-    constructor() {
+    constructor(props) {
         super();
 
+        const { params: { pagename = '' } } = props;
         this.state = {
             linkIncrease: false,
-            page: pages[0]
+            page: pagesByName['/' + pagename]
         };
     }
 
     componentWillReceiveProps(props) {
-        let { params: { pagename = '' } } = props;
-        pagename = `/${pagename}`;
-
-        const page = pagesByName[pagename];
+        const { params: { pagename = '' } } = props;
+        const page = pagesByName['/' + pagename];
         const { page: currPage } = this.state;
 
         if (page !== currPage) {
@@ -82,7 +81,7 @@ class PageContainer extends React.Component {
 
 export default function App() {
     return <BrowserRouter>
-        <Match pattern="/:pagename?" component={PageContainer} />
+        <Match pattern="/:pagename*" component={PageContainer} />
     </BrowserRouter>;
 }
 

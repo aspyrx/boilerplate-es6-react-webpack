@@ -12,7 +12,7 @@ class Page {
     constructor(page, index) {
         const name = index === 0
             ? '/'
-            : page.moduleName.match(/^\.(\/.*)/)[1];
+            : page.moduleName.match(/^\.(.*)/)[1];
 
         Object.assign(this, page, { index, name });
     }
