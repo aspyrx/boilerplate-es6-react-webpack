@@ -1,87 +1,42 @@
 import React from 'react';
-import { BrowserRouter, Match } from 'react-router';
-import ReactCSSTransitionReplace from 'react-css-transition-replace';
-import classNames from 'classnames';
-import pages, { pagesByName } from '~/pages';
+import { BrowserRouter, Miss, Match } from 'react-router';
+
+import asyncComponent from '~/components/asyncComponent';
+import Spinner from '~/components/spinner';
+import NotFound from 'bundle-loader?lazy!~/components/NotFound';
 import Header from '~/header';
-
-import 'normalize-css/normalize.css';
+import Footer from '~/footer';
 import styles from './app.less';
+import routes, { routesFlat } from '~/routes';
 
-class PageContainer extends React.Component {
-    static get propTypes() {
-        return {
-            params: React.PropTypes.shape({
-                pagename: React.PropTypes.string
-            }).isRequired
-        };
-    }
+const routesCtx = require.context(
+    'bundle-loader?lazy!./routes',
+    true,
+    /\.(js|md)$/
+);
 
-    constructor(props) {
-        super();
-
-        const { params: { pagename = '' } } = props;
-        this.state = {
-            linkIncrease: false,
-            page: pagesByName['/' + pagename]
-        };
-    }
-
-    componentWillReceiveProps(props) {
-        const { params: { pagename = '' } } = props;
-        const page = pagesByName['/' + pagename];
-        const { page: currPage } = this.state;
-
-        if (page !== currPage) {
-            this.setState({ page });
-
-            if (page.index > currPage.index) {
-                this.setState({ linkIncrease: true });
-            } else {
-                this.setState({ linkIncrease: false });
-            }
-        }
-    }
-
-    render() {
-        const { page, linkIncrease } = this.state;
-        const replaceClass = classNames(styles.replaceAnimated, {
-            [styles.increase]: linkIncrease
-        });
-
-        const { Component } = page;
-
-        return <div className={styles.containers}>
-            <div className={styles.container}>
-                <Header pages={pages} />
-            </div>
-            <div className={styles.container}>
-                <ReactCSSTransitionReplace className={replaceClass}
-                    transitionName={{
-                        enter: styles.enter,
-                        enterActive: styles.enterActive,
-                        leave: styles.leave,
-                        leaveActive: styles.leaveActive,
-                        appear: styles.appear,
-                        appearActive: styles.appearActive
-                    }}
-                    transitionAppear={true}
-                    transitionAppearTimeout={300}
-                    transitionEnterTimeout={600}
-                    transitionLeaveTimeout={300}
-                    overflowHidden={false}>
-                    <div key={page.name}>
-                        <Component />
-                    </div>
-                </ReactCSSTransitionReplace>
-            </div>
-        </div>;
-    }
-}
+const matches = routesFlat.map((route, i) => {
+    const { path, pattern, ...props } = route;
+    const loadModule = routesCtx(path);
+    const component = asyncComponent(loadModule, Spinner);
+    return <Match
+        {...props}
+        key={i}
+        exactly pattern={pattern}
+        component={component}
+    />;
+});
 
 export default function App() {
     return <BrowserRouter>
-        <Match pattern="/:pagename*" component={PageContainer} />
+        <div>
+            <Header routes={routes} />
+            <div className={styles.container}>
+                { matches }
+                <Miss component={asyncComponent(NotFound)} />
+            </div>
+            <Footer routes={routes} />
+        </div>
     </BrowserRouter>;
 }
 

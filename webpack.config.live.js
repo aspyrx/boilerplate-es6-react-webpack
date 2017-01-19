@@ -3,6 +3,8 @@
 const webpack = require('webpack');
 const config = require('./webpack.config.js');
 
+config.output.filename = '[name].js';
+
 config.entry.main.push(
     'react-hot-loader/patch',
     'webpack-dev-server/client?http://localhost:8080/',

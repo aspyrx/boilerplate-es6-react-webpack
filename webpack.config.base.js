@@ -19,15 +19,13 @@ module.exports = {
     output: {
         path: outDir,
         publicPath: '/',
-        filename: '[name].[hash].js',
-        chunkFilename: '[name].[chunkhash].js'
+        filename: '[name].[chunkhash].js'
     },
     resolve: {
         alias: {
             '~': srcDir,
             '^': vendorDir
         },
-        extensions: ['.js'],
         modules: [
             srcDir,
             'node_modules'

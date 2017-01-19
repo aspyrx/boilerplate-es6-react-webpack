@@ -32,7 +32,7 @@ if (!config.plugins) {
 }
 
 config.plugins.push(
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(['dist'], { verbose: true }),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.DefinePlugin({
         'process.env': {
