@@ -1,4 +1,5 @@
 import React from 'react';
+import { shape, string } from 'prop-types';
 
 export default function NotFound({ location: { pathname } }) {
     return <div>
@@ -8,8 +9,8 @@ export default function NotFound({ location: { pathname } }) {
 }
 
 NotFound.propTypes = {
-    location: React.PropTypes.shape({
-        pathname: React.PropTypes.string.isRequired
+    location: shape({
+        pathname: string.isRequired
     }).isRequired
 };
 

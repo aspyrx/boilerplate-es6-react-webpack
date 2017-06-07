@@ -6,6 +6,10 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const config = require('./webpack.config.base.js');
 
+const publicPath = '/';
+
+config.output.publicPath = publicPath;
+
 if (!config.module) {
     config.module = {};
 }
@@ -13,16 +17,18 @@ if (!config.module) {
 // Use ExtractTextPlugin on any loader that uses style-loader
 if (config.module.rules) {
     for (const l of config.module.rules) {
-        const loader = 'style-loader';
-        if (l.loader === loader) {
-            l.loader = ExtractTextPlugin.extract({ loader });
-            delete l.loaders;
-        } else if (l.loaders && l.loaders[0] === loader)  {
-            l.loader = ExtractTextPlugin.extract({
-                loader: l.loaders.slice(1),
-                fallbackLoader: loader
+        if (l.use === 'style-loader') {
+            l.use = ExtractTextPlugin.extract({ loader: 'style-loader' });
+        } else if (l.use[0] === 'style-loader'
+            || l.use[0].loader === 'style-loader')  {
+            l.use = ExtractTextPlugin.extract({
+                use: l.use.slice(1),
+                fallback: 'style-loader'
             });
-            delete l.loaders;
+        }
+
+        if (l.use[0].loader === '>/public-loader') {
+            l.use[0].options.publicPath = publicPath;
         }
     }
 }

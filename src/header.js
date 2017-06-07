@@ -1,45 +1,49 @@
 import React from 'react';
-import { Link } from 'react-router';
+import {
+    bool, string, oneOfType, func, shape, object, node
+} from 'prop-types';
+import { Route, NavLink } from 'react-router-dom';
 import classNames from 'classnames';
 
 import Dropdown from '~/components/dropdown';
 import styles from './header.less';
 
-const { string, arrayOf, func, shape, object } = React.PropTypes;
-const routeShape = {
-    name: string.isRequired,
-    title: string,
-    routes: arrayOf(object)
-};
+function objectIsEmpty(obj) {
+    // eslint-disable-next-line guard-for-in
+    for (const key in obj) {
+        return false;
+    }
+
+    return true;
+}
 
 function Logo() {
     return <div className={styles.logo}>
-        <Link to='/' activeOnlyWhenExact activeClassName={styles.active}>
-            Hello React!
-        </Link>
+        <NavLink to='/' exact activeClassName={styles.active}>
+            Logo
+        </NavLink>
     </div>;
 }
 
-function NavigationLink({ parent, name, title, children, ...props }) {
-    const to = `${parent}/${name}`;
-    return <Link
-        to={to}
-        activeOnlyWhenExact
-        activeClassName={styles.active}
-        {...props}
-    >
-        {children || title}
-    </Link>;
+function HeaderLink({ to, children, ...props }) {
+    return typeof children === 'function'
+        ? <Route path={to} children={children} {...props} />
+        : <NavLink
+            to={to}
+            exact
+            activeClassName={styles.active}
+            {...props}
+        >
+            {children}
+        </NavLink>;
 }
 
-NavigationLink.propTypes = {
-    parent: string.isRequired,
-    name: string.isRequired,
-    title: string.isRequired,
-    children: func
+HeaderLink.propTypes = {
+    to: string.isRequired,
+    children: oneOfType([func, node])
 };
 
-function DropdownButton({ parent, name, title, isOpen }) {
+function DropdownButton({ to, title, isOpen }) {
     function Child({ isActive }) {
         const classes = classNames(styles.button, {
             [styles.active]: isActive,
@@ -54,95 +58,90 @@ function DropdownButton({ parent, name, title, isOpen }) {
     }
 
     Child.propTypes = {
-        isActive: React.PropTypes.bool
+        isActive: bool
     };
 
-    return <NavigationLink
-        parent={parent}
-        name={name}
-        title={title}
-        activeOnlyWhenExact={false}
+    return <HeaderLink
+        to={to}
+        exact={false}
         children={Child}
     />;
 }
 
 DropdownButton.propTypes = {
-    parent: string.isRequired,
-    name: string.isRequired,
+    to: string.isRequired,
     title: string.isRequired,
-    isOpen: React.PropTypes.bool
+    isOpen: bool
 };
 
-function DropdownMenu({ parent, name, title, routes }) {
+function DropdownMenu({ to, title, children }) {
     return <div className={styles.menu}>
-        <NavigationLink parent={parent} name={name} title={title} />
-        {renderRoutes(routes, `${parent}/${name}`)}
+        <HeaderLink to={to}>{title}</HeaderLink>
+        {renderRoutes(to, children)}
     </div>;
 }
 
 DropdownMenu.propTypes = {
-    parent: string.isRequired,
-    name: string.isRequired,
+    to: string.isRequired,
     title: string.isRequired,
-    isOpen: React.PropTypes.bool,
-    routes: arrayOf(shape(routeShape))
+    isOpen: bool,
+    children: object.isRequired
 };
 
-function renderRoutes(routes, parent) {
-    return routes.filter(route =>
-        'title' in route
-    ).map(({ routes: subRoutes, title, name }, i) => {
-        if (!subRoutes) {
-            return <NavigationLink
-                key={i}
-                parent={parent}
-                name={name}
+function renderRoutes(parent, children) {
+    return Object.keys(children)
+        .map((name, i) => {
+            const { children: grandchildren, title, path } = children[name];
+
+            if (objectIsEmpty(grandchildren)) {
+                return <HeaderLink
+                    key={i}
+                    to={path}
+                >
+                    {title}
+                </HeaderLink>;
+            }
+
+            const button = <DropdownButton
+                to={path}
                 title={title}
             />;
-        }
 
-        const button = <DropdownButton
-            parent={parent}
-            name={name}
-            title={title}
-        />;
+            const { enter, enterActive, leave, leaveActive } = styles;
 
-        const { enter, enterActive, leave, leaveActive } = styles;
-
-        return <Dropdown
-            key={i}
-            className={styles.dropdown}
-            button={button}
-            transitionName={{
-                enter, enterActive, leave, leaveActive
-            }}
-            transitionEnterTimeout={300}
-            transitionLeaveTimeout={300}
-        >
-            <DropdownMenu
-                parent={parent}
-                name={name}
-                title={title}
-                routes={subRoutes}
-            />
-        </Dropdown>;
-    });
+            return <Dropdown
+                key={i}
+                className={styles.dropdown}
+                button={button}
+                transitionName={{
+                    enter, enterActive, leave, leaveActive
+                }}
+                transitionEnterTimeout={300}
+                transitionLeaveTimeout={300}
+            >
+                <DropdownMenu
+                    to={path}
+                    title={title}
+                    children={grandchildren}
+                />
+            </Dropdown>;
+        });
 }
 
-export default function Header({ routes }) {
+export default function Header({ routeConfig }) {
     return <div className={styles.header}>
         <div className={styles.navigation}>
             <Logo />
-            {renderRoutes(routes, '')}
+            {renderRoutes('', routeConfig.children)}
         </div>
     </div>;
 }
 
 Header.propTypes = {
-    routes: arrayOf(shape({
-        name: string.isRequired,
-        title: string,
-        routes: arrayOf(shape(routeShape))
-    }))
+    routeConfig: shape({
+        path: string.isRequired,
+        title: string.isRequired,
+        children: object.isRequired
+    })
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Miss, Match } from 'react-router';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import asyncComponent from '~/components/asyncComponent';
 import Spinner from '~/components/spinner';
@@ -7,22 +7,15 @@ import NotFound from 'bundle-loader?lazy!~/components/NotFound';
 import Header from '~/header';
 import Footer from '~/footer';
 import styles from './app.less';
-import routes, { routesFlat } from '~/routes';
+import routeConfig, { routeConfigFlat } from '~/routeConfig';
 
-const routesCtx = require.context(
-    'bundle-loader?lazy!./routes',
-    true,
-    /\.(js|md)$/
-);
-
-const matches = routesFlat.map((route, i) => {
-    const { path, pattern, ...props } = route;
-    const loadModule = routesCtx(path);
-    const component = asyncComponent(loadModule, Spinner);
-    return <Match
-        {...props}
+const routes = routeConfigFlat.map((config, i) => {
+    const { path, component } = config;
+    return <Route
         key={i}
-        exactly pattern={pattern}
+        path={path}
+        exact={path === '/'}
+        strict
         component={component}
     />;
 });
@@ -30,12 +23,14 @@ const matches = routesFlat.map((route, i) => {
 export default function App() {
     return <BrowserRouter>
         <div>
-            <Header routes={routes} />
+            <Header routeConfig={routeConfig} />
             <div className={styles.container}>
-                { matches }
-                <Miss component={asyncComponent(NotFound)} />
+                <Switch>
+                    { routes }
+                    <Route component={asyncComponent(NotFound, Spinner)} />
+                </Switch>
             </div>
-            <Footer routes={routes} />
+            <Footer routeConfig={routeConfig} />
         </div>
     </BrowserRouter>;
 }

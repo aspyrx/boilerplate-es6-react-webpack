@@ -5,8 +5,40 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 
-const rootDir = path.resolve(__dirname, 'dist');
-const index = path.join(rootDir, 'index.html');
+const bundleDir = path.resolve(__dirname, 'dist');
+const publicDir = path.resolve(__dirname, 'public');
+const index = path.join(bundleDir, 'index.html');
+
+function serveFile(res, filepath) {
+    return new Promise((resolve, reject) => {
+        console.log(filepath);
+        fs.createReadStream(filepath)
+            .on('error', reject)
+            .pipe(res)
+            .on('error', reject)
+            .on('finish', resolve);
+    });
+}
+
+function serve(res, contentBase, pathname) {
+    const filepath = path.join(contentBase[0], pathname);
+    contentBase = contentBase.slice(1);
+
+    return serveFile(res, filepath).catch(err => {
+        if (!(err.code === 'ENOENT' || err.code === 'EISDIR')) {
+            res.statusCode = 500;
+            res.end(err.message, 'utf8');
+            return;
+        }
+
+        if (contentBase.length > 0) {
+            return serve(res, contentBase, pathname);
+        }
+
+        // Fallback to SPA router
+        return serveFile(res, index);
+    });
+}
 
 http.createServer(function requestListener(req, res) {
     let { pathname } = url.parse(req.url);
@@ -17,25 +49,9 @@ http.createServer(function requestListener(req, res) {
     }
 
     if (pathname === '/') {
-        pathname = index;
+        pathname = '/index.html';
     }
 
-    const filepath = path.join(rootDir, pathname);
-    fs.createReadStream(filepath)
-        .on('error', err => {
-            if (err.code === 'ENOENT') {
-                // File not found, use index instead (SPA router)
-                return fs.createReadStream(index)
-                    .on('error', indexErr => {
-                        res.statusCode = 404;
-                        res.end(indexErr.message);
-                    })
-                    .pipe(res);
-            }
-
-            res.statusCode = 503;
-            res.end(err.message, 'utf8');
-        })
-        .pipe(res);
+    return serve(res, [bundleDir, publicDir], pathname);
 }).listen(process.argv[2] || '8080');
 

@@ -9,16 +9,14 @@ a[href] {
 }
 
 :global(#app) {
-    display: flex;
-    flex-flow: column nowrap;
-    min-height: 100vh;
-
-    font-family: sans-serif;
+    font-family: Corbel, "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", "Bitstream Vera Sans", "Liberation Sans", Verdana, "Verdana Ref", sans-serif;
     font-size: @font-size;
     line-height: @line-height;
-
-    background-color: @color-bg;
+    min-height: 100vh;
     color: @color-text;
+    background-color: @color-bg;
+    display: flex;
+    flex-flow: column nowrap;
 
     > * {
         flex: 1;
